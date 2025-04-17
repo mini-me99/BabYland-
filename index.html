@@ -124,7 +124,8 @@
       color: #fff;
     }
     input[type="text"],
-    input[type="tel"] {
+    input[type="tel"],
+    textarea {
       width: 90%;
       max-width: 300px;
       padding: 10px;
@@ -175,7 +176,7 @@
       from { opacity: 0; transform: translateY(20px); }
       to { opacity: 1; transform: translateY(0); }
     }
-    /* Media Query: For very small screens - force single-column layout for product cards */
+    /* Media Query: For very small screens */
     @media (max-width: 600px) {
       .product-container {
         grid-template-columns: 1fr;
@@ -223,14 +224,15 @@
       </tbody>
     </table>
     <!-- Order Form -->
-    <form id="orderForm" action="https://script.google.com/macros/s/AKfycbyTfUAo6qHay94f7zEP8xt2u7ijFC69pZ7KaWsUs6Qvn6caLK7fP9WIIJyLKOhKxQgZZg/exec" method="POST">
+    <form id="orderForm" action="https://script.google.com/macros/s/AKfycbxxOTZaUrpHHcDXKidrjnX3vjzXwLUfoWjhgVQPTPie263_1MLbI_qZLtLWAwdPzeqTpA/exec" method="POST">
       <input type="hidden" name="orderDetails" id="orderDetails">
       <!-- Personal Information Fields -->
       <input type="text" name="name" placeholder="Your Name" required>
-      <!-- New Store Name Field -->
       <input type="text" name="storeName" placeholder="Store Name" required>
       <input type="tel" name="phone" placeholder="Phone Number" required>
       <input type="text" name="location" placeholder="Location" required>
+      <input type="number" name="deposit" placeholder="Deposit Amount" required>
+      <textarea name="message" placeholder="Message (Optional)"></textarea>
       <button type="submit" class="btn">Submit Order</button>
     </form>
     <button class="btn" id="backToSelection" style="background: rgba(0,0,0,0.4);">Back to Selection</button>
@@ -239,163 +241,163 @@
   <!-- Thank You Section -->
   <section id="thankyou-section" class="thankyou-section">
     <h1>Thank You!</h1>
-    <p>Your order has been successfully submitted.</p>
-    <p>We appreciate your business at Baby Land.</p>
-    <button class="btn" id="newOrderBtn">Place New Order</button>
-  </section>
-  
-  <script>
-    // Generate product cards (codes 1 to 200)
-    const products = [];
-    for (let i = 1; i <= 200; i++) {
-      products.push({ code: i.toString() });
-    }
-  
-    // Order object to store product codes and quantities
-    let order = {};
-    const productContainer = document.getElementById('productContainer');
-  
-    // Function to update the order object and adjust card visuals
-    function updateOrder(productCode, quantity, card) {
-      if (quantity > 0) {
-        order[productCode] = quantity;
-        card.classList.add('selected');
-      } else {
-        delete order[productCode];
-        card.classList.remove('selected');
+      <p>Your order has been successfully submitted.</p>
+      <p>We appreciate your business at Baby Land.</p>
+      <button class="btn" id="newOrderBtn">Place New Order</button>
+    </section>
+
+    <script>
+      // Generate product cards (codes 1 to 200)
+      const products = [];
+      for (let i = 1; i <= 200; i++) {
+        products.push({ code: i.toString() });
       }
-    }
-  
-    // Dynamically create product cards
-    function loadProducts() {
-      products.forEach(product => {
-        const card = document.createElement('div');
-        card.classList.add('product-card');
-        card.dataset.code = product.code;
-  
-        // Create and display product code
-        const codeDisplay = document.createElement('div');
-        codeDisplay.textContent = "Code " + product.code;
-        codeDisplay.style.fontWeight = 'bold';
-        codeDisplay.style.fontSize = '1.2em';
-        card.appendChild(codeDisplay);
-  
-        // Create quantity input field
-        const qtyInput = document.createElement('input');
-        qtyInput.type = 'number';
-        qtyInput.min = '0';
-        qtyInput.value = '0';
-        qtyInput.classList.add('qty-input');
-        card.appendChild(qtyInput);
-  
-        // Create Remove button
-        const removeBtn = document.createElement('button');
-        removeBtn.textContent = 'Remove';
-        removeBtn.classList.add('remove-btn');
-        card.appendChild(removeBtn);
-  
-        // Update order when input changes
-        qtyInput.addEventListener('change', () => {
-          const quantity = parseInt(qtyInput.value) || 0;
-          updateOrder(product.code, quantity, card);
-        });
-  
-        // Remove button resets the input field
-        removeBtn.addEventListener('click', () => {
+
+      // Order object to store product codes and quantities
+      let order = {};
+      const productContainer = document.getElementById('productContainer');
+
+      // Function to update the order object and adjust card visuals
+      function updateOrder(productCode, quantity, card) {
+        if (quantity > 0) {
+          order[productCode] = quantity;
+          card.classList.add('selected');
+        } else {
+          delete order[productCode];
+          card.classList.remove('selected');
+        }
+      }
+
+      // Dynamically create product cards
+      function loadProducts() {
+        products.forEach(product => {
+          const card = document.createElement('div');
+          card.classList.add('product-card');
+          card.dataset.code = product.code;
+
+          // Create and display product code
+          const codeDisplay = document.createElement('div');
+          codeDisplay.textContent = "Code " + product.code;
+          codeDisplay.style.fontWeight = 'bold';
+          codeDisplay.style.fontSize = '1.2em';
+          card.appendChild(codeDisplay);
+
+          // Create quantity input field
+          const qtyInput = document.createElement('input');
+          qtyInput.type = 'number';
+          qtyInput.min = '0';
           qtyInput.value = '0';
-          updateOrder(product.code, 0, card);
+          qtyInput.classList.add('qty-input');
+          card.appendChild(qtyInput);
+
+          // Create Remove button
+          const removeBtn = document.createElement('button');
+          removeBtn.textContent = 'Remove';
+          removeBtn.classList.add('remove-btn');
+          card.appendChild(removeBtn);
+
+          // Update order when input changes
+          qtyInput.addEventListener('change', () => {
+            const quantity = parseInt(qtyInput.value) || 0;
+            updateOrder(product.code, quantity, card);
+          });
+
+          // Remove button resets the input field
+          removeBtn.addEventListener('click', () => {
+            qtyInput.value = '0';
+            updateOrder(product.code, 0, card);
+          });
+
+          productContainer.appendChild(card);
         });
-  
-        productContainer.appendChild(card);
-      });
-    }
-    loadProducts();
-  
-    // Search bar functionality: scroll to and highlight matching product card
-    const searchBar = document.getElementById('searchBar');
-    searchBar.addEventListener('keyup', (e) => {
-      const query = e.target.value.trim();
-      if (query) {
-        const foundCard = productContainer.querySelector(`[data-code="${query}"]`);
-        if (foundCard) {
-          foundCard.scrollIntoView({ behavior: "smooth", block: "center" });
-          foundCard.style.border = "3px solid #FFD700";
-          setTimeout(() => {
-            foundCard.style.border = "";
-          }, 2000);
-        }
       }
-    });
-  
-    // Ensure all inputs update the order object before transitioning to summary view
-    function updateAllInputs() {
-      document.querySelectorAll('.qty-input').forEach(input => {
-        const card = input.parentElement;
-        const code = card.dataset.code;
-        const quantity = parseInt(input.value) || 0;
-        updateOrder(code, quantity, card);
-      });
-    }
-  
-    // Transition to order summary view
-    const goSummaryBtn = document.getElementById('goSummary');
-    const selectionSection = document.getElementById('selection-section');
-    const summarySection = document.getElementById('summary-section');
-    const orderTableBody = document.getElementById('orderTable').querySelector('tbody');
-    const orderDetailsInput = document.getElementById('orderDetails');
-  
-    goSummaryBtn.addEventListener('click', () => {
-      updateAllInputs();
-      orderTableBody.innerHTML = '';
-      for (const code in order) {
-        if (order.hasOwnProperty(code)) {
-          const row = document.createElement('tr');
-          const codeCell = document.createElement('td');
-          codeCell.textContent = "Code " + code;
-          const qtyCell = document.createElement('td');
-          qtyCell.textContent = order[code];
-          row.appendChild(codeCell);
-          row.appendChild(qtyCell);
-          orderTableBody.appendChild(row);
+      loadProducts();
+
+      // Search bar functionality: scroll to and highlight matching product card
+      const searchBar = document.getElementById('searchBar');
+      searchBar.addEventListener('keyup', (e) => {
+        const query = e.target.value.trim();
+        if (query) {
+          const foundCard = productContainer.querySelector(`[data-code="${query}"]`);
+          if (foundCard) {
+            foundCard.scrollIntoView({ behavior: "smooth", block: "center" });
+            foundCard.style.border = "3px solid #FFD700";
+            setTimeout(() => {
+              foundCard.style.border = "";
+            }, 2000);
+          }
         }
-      }
-      orderDetailsInput.value = JSON.stringify(order);
-      selectionSection.style.display = 'none';
-      summarySection.style.display = 'flex';
-    });
-  
-    // Allow return to product selection view
-    const backBtn = document.getElementById('backToSelection');
-    backBtn.addEventListener('click', () => {
-      summarySection.style.display = 'none';
-      selectionSection.style.display = 'block';
-    });
-  
-    // Intercept form submission using fetch
-    const orderForm = document.getElementById('orderForm');
-    orderForm.addEventListener('submit', function(e) {
-      e.preventDefault();
-      const formData = new FormData(orderForm);
-      fetch(orderForm.action, {
-         method: 'POST',
-         body: formData
-      })
-      .then(response => response.text())
-      .then(data => {
-         summarySection.style.display = 'none';
-         document.getElementById('thankyou-section').style.display = 'flex';
-      })
-      .catch(error => {
-         console.error("Error submitting form:", error);
-         alert("Error submitting your order. Please try again.");
       });
-    });
-  
-    // New order button: reload the page
-    const newOrderBtn = document.getElementById('newOrderBtn');
-    newOrderBtn.addEventListener('click', () => {
-      location.reload();
-    });
-  </script>
+
+      // Ensure all inputs update the order object before transitioning to summary view
+      function updateAllInputs() {
+        document.querySelectorAll('.qty-input').forEach(input => {
+          const card = input.parentElement;
+          const code = card.dataset.code;
+          const quantity = parseInt(input.value) || 0;
+          updateOrder(code, quantity, card);
+        });
+      }
+
+      // Transition to order summary view
+      const goSummaryBtn = document.getElementById('goSummary');
+      const selectionSection = document.getElementById('selection-section');
+      const summarySection = document.getElementById('summary-section');
+      const orderTableBody = document.getElementById('orderTable').querySelector('tbody');
+      const orderDetailsInput = document.getElementById('orderDetails');
+
+      goSummaryBtn.addEventListener('click', () => {
+        updateAllInputs();
+        orderTableBody.innerHTML = '';
+        for (const code in order) {
+          if (order.hasOwnProperty(code)) {
+            const row = document.createElement('tr');
+            const codeCell = document.createElement('td');
+            codeCell.textContent = "Code " + code;
+            const qtyCell = document.createElement('td');
+            qtyCell.textContent = order[code];
+            row.appendChild(codeCell);
+            row.appendChild(qtyCell);
+            orderTableBody.appendChild(row);
+          }
+        }
+        orderDetailsInput.value = JSON.stringify(order);
+        selectionSection.style.display = 'none';
+        summarySection.style.display = 'flex';
+      });
+
+      // Allow return to product selection view
+      const backBtn = document.getElementById('backToSelection');
+      backBtn.addEventListener('click', () => {
+        summarySection.style.display = 'none';
+        selectionSection.style.display = 'block';
+      });
+
+      // Intercept form submission using fetch
+      const orderForm = document.getElementById('orderForm');
+      orderForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const formData = new FormData(orderForm);
+        fetch(orderForm.action, {
+          method: 'POST',
+          body: formData
+        })
+        .then(response => response.text())
+        .then(data => {
+          summarySection.style.display = 'none';
+          document.getElementById('thankyou-section').style.display = 'flex';
+        })
+        .catch(error => {
+          console.error("Error submitting form:", error);
+          alert("Error submitting your order. Please try again.");
+        });
+      });
+
+      // New order button: reload the page
+      const newOrderBtn = document.getElementById('newOrderBtn');
+      newOrderBtn.addEventListener('click', () => {
+        location.reload();
+      });
+    </script>
 </body>
 </html>
