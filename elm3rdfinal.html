@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Baby Land</title>
+  <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet">
+  <style>
+    /* CSS Reset */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Montserrat', sans-serif;
+      background: linear-gradient(135deg, #ff9a9e, #a1c4fd);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+    }
+    header {
+      margin-bottom: 20px;
+      text-align: center;
+      animation: fadeIn 1s ease-in;
+    }
+    header h1 {
+      font-size: 3em;
+      color: #fff;
+      text-shadow: 2px 2px 5px rgba(0,0,0,0.3);
+    }
+    /* CSS Grid Container for Product Boxes */
+    .product-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 15px;
+      width: 100%;
+      max-width: 1200px;
+      margin-bottom: 30px;
+      animation: fadeIn 1s ease-in;
+    }
+    .product-card {
+      background: rgba(255, 255, 255, 0.85);
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 10px;
+      font-size: 1.1em;
+      font-weight: bold;
+      transition: transform 0.2s, box-shadow 0.2s;
+      position: relative;
+    }
+    .product-card:hover {
+      transform: scale(1.05);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+    .product-card.selected {
+      border: 2px solid #ff4081;
+    }
+    /* Styling for quantity input */
+    .qty-input {
+      width: 56px;
+      margin: 10px 0;
+      padding: 5px;
+      border-radius: 4px;
+      border: 1px solid #aaa;
+      text-align: center;
+    }
+    /* Styling for remove button */
+    .remove-btn {
+      background: #ff4081;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 6px;
+      font-size: 0.8em;
+      color: #fff;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    .remove-btn:hover {
+      background: #e0356a;
+    }
+    /* Order Summary Section */
+    .summary-container {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      animation: fadeIn 1s ease-in;
+    }
+    table {
+      border-collapse: collapse;
+      margin-bottom: 20px;
+      width: 100%;
+      max-width: 500px;
+    }
+    table, th, td {
+      border: 1px solid #ddd;
+    }
+    th, td {
+      padding: 10px;
+      text-align: center;
+    }
+    th {
+      background: #a1c4fd;
+      color: #fff;
+    }
+    input[type="text"],
+    input[type="tel"] {
+      width: calc(100% - 20px);
+      padding: 10px;
+      margin: 8px 0;
+      border: 1px solid #aaa;
+      border-radius: 6px;
+    }
+    .btn {
+      background: linear-gradient(135deg, #ff9a9e, #a1c4fd);
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-size: 1em;
+      color: #fff;
+      cursor: pointer;
+      transition: background 0.3s;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      margin: 10px;
+    }
+    .btn:hover {
+      background: linear-gradient(135deg, #a1c4fd, #ff9a9e);
+    }
+    /* Thank You Section */
+    .thankyou-section {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 70vh;
+      text-align: center;
+      animation: fadeIn 1s ease-in;
+    }
+    .thankyou-section h1 {
+      font-size: 3em;
+      color: #fff;
+      margin-bottom: 20px;
+      text-shadow: 2px 2px 5px rgba(0,0,0,0.3);
+    }
+    .thankyou-section p {
+      font-size: 1.2em;
+      color: #fff;
+      margin-bottom: 10px;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Baby Land</h1>
+  </header>
+
+  <!-- Product Selection Section -->
+  <section id="selection-section">
+    <div class="product-container" id="productContainer">
+      <!-- 200 Product cards dynamically generated -->
+    </div>
+    <button class="btn" id="goSummary">Review Order</button>
+  </section>
+
+  <!-- Order Summary Section -->
+  <section id="summary-section" class="summary-container">
+    <h2 style="color: #fff; margin-bottom: 20px;">Order Summary</h2>
+    <table id="orderTable">
+      <thead>
+        <tr>
+          <th>Product Code</th>
+          <th>Quantity</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Order rows generated here -->
+      </tbody>
+    </table>
+    <!-- Form submits to your new Apps Script URL -->
+    <form id="orderForm" action="https://script.google.com/macros/s/AKfycbznv6KhqABDHO1TIXyytEyK3UKeZMN_ctKqY5z7aQVFn5Bu5ffV27Jk-s5s9ltVzl1wKQ/exec" method="POST">
+      <input type="hidden" name="orderDetails" id="orderDetails">
+      <input type="text" name="name" placeholder="Your Name" required>
+      <input type="tel" name="phone" placeholder="Phone Number" required>
+      <input type="text" name="location" placeholder="Location" required>
+      <button type="submit" class="btn">Submit Order</button>
+    </form>
+    <button class="btn" id="backToSelection" style="background: rgba(0,0,0,0.4);">Back to Selection</button>
+  </section>
+
+  <!-- Thank You Section -->
+  <section id="thankyou-section" class="thankyou-section">
+    <h1>Thank You!</h1>
+    <p>Your order has been successfully submitted.</p>
+    <p>We appreciate your business at Baby Land.</p>
+    <button class="btn" id="newOrderBtn">Place New Order</button>
+  </section>
+
+  <script>
+    // Generate product cards from code 1 to 200.
+    const products = [];
+    for (let i = 1; i <= 200; i++){
+      products.push({ code: i.toString() });
+    }
+    
+    // Order object will store product codes and quantities.
+    let order = {};
+    const productContainer = document.getElementById('productContainer');
+    
+    // Updates order and adjusts card visuals.
+    function updateOrder(productCode, quantity, card) {
+      if (quantity > 0) {
+        order[productCode] = quantity;
+        card.classList.add('selected');
+      } else {
+        delete order[productCode];
+        card.classList.remove('selected');
+      }
+    }
+    
+    // Dynamically create product cards.
+    function loadProducts() {
+      products.forEach(product => {
+        const card = document.createElement('div');
+        card.classList.add('product-card');
+        card.dataset.code = product.code;
+  
+        // Display product code.
+        const codeDisplay = document.createElement('div');
+        codeDisplay.textContent = "Code " + product.code;
+        codeDisplay.style.fontWeight = 'bold';
+        codeDisplay.style.fontSize = '1.2em';
+        card.appendChild(codeDisplay);
+  
+        // Quantity input field.
+        const qtyInput = document.createElement('input');
+        qtyInput.type = 'number';
+        qtyInput.min = '0';
+        qtyInput.value = '0';
+        qtyInput.classList.add('qty-input');
+        card.appendChild(qtyInput);
+  
+        // Create Remove button.
+        const removeBtn = document.createElement('button');
+        removeBtn.textContent = 'Remove';
+        removeBtn.classList.add('remove-btn');
+        card.appendChild(removeBtn);
+  
+        // Update order on input change.
+        qtyInput.addEventListener('change', () => {
+          const quantity = parseInt(qtyInput.value) || 0;
+          updateOrder(product.code, quantity, card);
+        });
+  
+        // Remove button resets quantity.
+        removeBtn.addEventListener('click', () => {
+          qtyInput.value = '0';
+          updateOrder(product.code, 0, card);
+        });
+  
+        productContainer.appendChild(card);
+      });
+    }
+    loadProducts();
+    
+    // Transition to the order summary view.
+    const goSummaryBtn = document.getElementById('goSummary');
+    const selectionSection = document.getElementById('selection-section');
+    const summarySection = document.getElementById('summary-section');
+    const orderTableBody = document.getElementById('orderTable').querySelector('tbody');
+    const orderDetailsInput = document.getElementById('orderDetails');
+    
+    goSummaryBtn.addEventListener('click', () => {
+      orderTableBody.innerHTML = '';
+      // Create summary rows from the order object.
+      for (const code in order) {
+        if (order.hasOwnProperty(code)) {
+          const row = document.createElement('tr');
+          const codeCell = document.createElement('td');
+          codeCell.textContent = "Code " + code;
+          const qtyCell = document.createElement('td');
+          qtyCell.textContent = order[code];
+          row.appendChild(codeCell);
+          row.appendChild(qtyCell);
+          orderTableBody.appendChild(row);
+        }
+      }
+      // Save order details as JSON for submission.
+      orderDetailsInput.value = JSON.stringify(order);
+      selectionSection.style.display = 'none';
+      summarySection.style.display = 'flex';
+    });
+    
+    // Return to product selection.
+    const backBtn = document.getElementById('backToSelection');
+    backBtn.addEventListener('click', () => {
+      summarySection.style.display = 'none';
+      selectionSection.style.display = 'block';
+    });
+    
+    // Intercept form submission with fetch.
+    const orderForm = document.getElementById('orderForm');
+    orderForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      const formData = new FormData(orderForm);
+      fetch(orderForm.action, {
+         method: 'POST',
+         body: formData
+      })
+      .then(response => response.text())
+      .then(data => {
+         // On success, hide summary and display Thank You page.
+         summarySection.style.display = 'none';
+         document.getElementById('thankyou-section').style.display = 'flex';
+      })
+      .catch(error => {
+         console.error("Error submitting form:", error);
+         alert("Error submitting your order. Please try again.");
+      });
+    });
+    
+    // The button to place a new order reloads the page.
+    const newOrderBtn = document.getElementById('newOrderBtn');
+    newOrderBtn.addEventListener('click', () => {
+      location.reload();
+    });
+  </script>
+</body>
+</html>
