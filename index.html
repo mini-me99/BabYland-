@@ -18,11 +18,13 @@
       flex-direction: column;
       align-items: center;
       padding: 10px;
+      overflow-x: hidden;
     }
     header {
       margin-bottom: 20px;
       text-align: center;
       animation: fadeIn 1s ease-in;
+      width: 100%;
     }
     header h1 {
       font-size: 2.5em;
@@ -50,6 +52,7 @@
       margin-bottom: 20px;
       animation: fadeIn 1s ease-in;
     }
+    /* Product Card Styles */
     .product-card {
       background: rgba(255, 255, 255, 0.9);
       border-radius: 8px;
@@ -172,11 +175,21 @@
       from { opacity: 0; transform: translateY(20px); }
       to { opacity: 1; transform: translateY(0); }
     }
-    /* Media Query: For very small screens */
+    /* Media Query: For very small screens - force single-column layout for product cards */
     @media (max-width: 600px) {
-      header h1 { font-size: 2em; }
-      .btn { padding: 8px 16px; font-size: 0.9em; }
-      .search-input { max-width: 260px; }
+      .product-container {
+        grid-template-columns: 1fr;
+      }
+      header h1 {
+        font-size: 2em;
+      }
+      .btn {
+        padding: 8px 16px;
+        font-size: 0.9em;
+      }
+      .search-input {
+        max-width: 260px;
+      }
     }
   </style>
 </head>
@@ -210,7 +223,7 @@
       </tbody>
     </table>
     <!-- Order Form -->
-    <form id="orderForm" action="https://script.google.com/macros/s/AKfycbyTfUAo6qHay94f7zEP8xt2u7ijFC69pZ7KaWsUs6Qvn6caLK7fP9WIIJyLKOhKxQgZZg/exec" method="POST">
+    <form id="orderForm" action="https://script.google.com/macros/s/AKfycbzhOT9zEqhZnwTef43yTdKEyF75hOId535P2oPmm6vwi2q1pJNFvzIxVUYDX0iSxBxrqg/exec" method="POST">
       <input type="hidden" name="orderDetails" id="orderDetails">
       <!-- Personal Information Fields -->
       <input type="text" name="name" placeholder="Your Name" required>
@@ -314,7 +327,7 @@
       }
     });
   
-    // Ensure all inputs update the order object before switching to summary view
+    // Ensure all inputs update the order object before transitioning to summary view
     function updateAllInputs() {
       document.querySelectorAll('.qty-input').forEach(input => {
         const card = input.parentElement;
@@ -351,14 +364,14 @@
       summarySection.style.display = 'flex';
     });
   
-    // Allow return to the product selection view
+    // Allow return to product selection view
     const backBtn = document.getElementById('backToSelection');
     backBtn.addEventListener('click', () => {
       summarySection.style.display = 'none';
       selectionSection.style.display = 'block';
     });
   
-    // Intercept form submission via fetch
+    // Intercept form submission using fetch
     const orderForm = document.getElementById('orderForm');
     orderForm.addEventListener('submit', function(e) {
       e.preventDefault();
@@ -378,7 +391,7 @@
       });
     });
   
-    // New order button reloads the page
+    // New order button: reload the page
     const newOrderBtn = document.getElementById('newOrderBtn');
     newOrderBtn.addEventListener('click', () => {
       location.reload();
